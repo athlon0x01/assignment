@@ -1,6 +1,7 @@
 package my.ciklum.assignment.first;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -47,24 +48,23 @@ public class MiniBookTest {
         book = new MiniBook();
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void wrongQuoteTypeTest() {
-        book.addQuote("Q1/W/U/1.31/1000000");
+    private void addWithDelay(String quote) {
+        book.addQuote(quote);
+        try {
+            Thread.sleep(10);
+        } catch (InterruptedException e) {
+            //who cares
+        }
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void wrongQuoteStatusTest() {
-        book.addQuote("Q1/B/NEW/1.31/1000000");
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void wrongQuotePriceTest() {
-        book.addQuote("Q1/B/N/1.rfd31/1000000");
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void wrongQuoteVolumeTest() {
-        book.addQuote("Q1/B/NEW/1.31/-100");
+    @Test
+    public void emptyBookTest() {
+        final List<String> quotes = book.dumpQuotes();
+        assertEquals(3, quotes.size());
+        final List<String> expected = Arrays.asList("OFFER",
+                "",
+                "BID");
+        assertEquals(expected, quotes);
     }
 
     @Test
@@ -80,13 +80,118 @@ public class MiniBookTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
+    public void nullQuoteTest() {
+        book.addQuote("");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
     public void addUpdateQuoteFirstTest() {
         book.addQuote("Q1/O/U/1.31/1000000");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void addDeleteQuoteFirstTest() {
-        book.addQuote("Q1/B/U/1.31/1000000");
+        book.addQuote("Q1/B/D/1.31/1000000");
+        final List<String> quotes = book.dumpQuotes();
+        assertEquals(3, quotes.size());
+        final List<String> expected = Arrays.asList("OFFER",
+                "",
+                "BID");
+        assertEquals(expected, quotes);
+    }
+
+    @Test
+    public void simpleBidQuoteOrderTest() {
+        final List<String> quoteString = Arrays.asList("Q1/B/N/1.31/100",
+                "Q2/B/N/1.32/200");
+        quoteString.forEach(this::addWithDelay);
+        final List<String> quotes = book.dumpQuotes();
+        assertEquals(5, quotes.size());
+        final List<String> expected = Arrays.asList("OFFER",
+                "",
+                "BID",
+                "Q2/1.32/200",
+                "Q1/1.31/100");
+        assertEquals(expected, quotes);
+    }
+
+    @Test
+    public void simpleBidQuoteOrderVolumeTest() {
+        final List<String> quoteString = Arrays.asList("Q1/B/N/1.31/100",
+                "Q2/B/N/1.31/200");
+        quoteString.forEach(this::addWithDelay);
+        final List<String> quotes = book.dumpQuotes();
+        assertEquals(5, quotes.size());
+        final List<String> expected = Arrays.asList("OFFER",
+                "",
+                "BID",
+                "Q2/1.31/200",
+                "Q1/1.31/100");
+        assertEquals(expected, quotes);
+    }
+
+    @Test
+    public void simpleBidQuoteOrderTimestampTest() {
+        final List<String> quoteString = Arrays.asList("Q1/B/N/1.31/100",
+                "Q2/B/N/1.31/200",
+                "Q3/B/N/1.31/100");
+        quoteString.forEach(this::addWithDelay);
+        final List<String> quotes = book.dumpQuotes();
+        assertEquals(6, quotes.size());
+        final List<String> expected = Arrays.asList("OFFER",
+                "",
+                "BID",
+                "Q2/1.31/200",
+                "Q3/1.31/100",
+                "Q1/1.31/100");
+        assertEquals(expected, quotes);
+    }
+
+    @Test
+    public void simpleOfferQuoteOrderTest() {
+        final List<String> quoteString = Arrays.asList("Q1/O/N/1.31/100",
+                "Q2/O/N/1.32/200");
+        quoteString.forEach(this::addWithDelay);
+        final List<String> quotes = book.dumpQuotes();
+        assertEquals(5, quotes.size());
+        final List<String> expected = Arrays.asList("OFFER",
+                "Q1/1.31/100",
+                "Q2/1.32/200",
+                "",
+                "BID");
+        assertEquals(expected, quotes);
+    }
+
+    @Test
+    public void simpleOfferQuoteOrderVolumeTest() {
+        final List<String> quoteString = Arrays.asList("Q1/O/N/1.31/100",
+                "Q2/O/N/1.31/200");
+        quoteString.forEach(this::addWithDelay);
+        final List<String> quotes = book.dumpQuotes();
+        assertEquals(5, quotes.size());
+        final List<String> expected = Arrays.asList("OFFER",
+                "Q2/1.31/200",
+                "Q1/1.31/100",
+                "",
+                "BID");
+        assertEquals(expected, quotes);
+    }
+
+    @Test
+    public void simpleOfferQuoteOrderTimestampTest() {
+        final List<String> quoteString = Arrays.asList("Q1/O/N/1.31/100",
+                "Q2/O/N/1.31/200",
+                "Q3/O/N/1.31/100");
+        quoteString.forEach(this::addWithDelay);
+        final List<String> quotes = book.dumpQuotes();
+        assertEquals(6, quotes.size());
+        final List<String> expected = Arrays.asList("OFFER",
+                "Q2/1.31/200",
+                "Q3/1.31/100",
+                "Q1/1.31/100",
+                "",
+                "BID");
+        assertEquals(expected, quotes);
     }
 
     @Test
@@ -100,7 +205,7 @@ public class MiniBookTest {
                 "Q7/O/N/1.33/200000",
                 "Q5/B/U/1.20/500000",
                 "Q7/O/U/1.33/100000");
-        quoteString.forEach(book::addQuote);
+        quoteString.forEach(this::addWithDelay);
         final List<String> quotes = book.dumpQuotes();
         assertEquals(10, quotes.size());
         final List<String> expected = Arrays.asList("OFFER",
@@ -128,7 +233,7 @@ public class MiniBookTest {
                 "Q5/B/U/1.20/500000",
                 "Q7/O/U/1.33/100000",
                 "Q7/O/D/0/0");
-        quoteString.forEach(book::addQuote);
+        quoteString.forEach(this::addWithDelay);
         final List<String> quotes = book.dumpQuotes();
         assertEquals(9, quotes.size());
         final List<String> expected = Arrays.asList("OFFER",
@@ -154,8 +259,8 @@ public class MiniBookTest {
                 "Q7/O/N/1.33/200000",
                 "Q5/B/U/1.20/500000",
                 "Q7/O/U/1.33/100000",
-                "Q6/O/N/1.32/1000000");
-        quoteString.forEach(book::addQuote);
+                "Q8/O/N/1.32/1000000");
+        quoteString.forEach(this::addWithDelay);
         final List<String> quotes = book.dumpQuotes();
         assertEquals(11, quotes.size());
         final List<String> expected = Arrays.asList("OFFER",
@@ -184,7 +289,7 @@ public class MiniBookTest {
                 "Q5/B/U/1.20/500000",
                 "Q7/O/U/1.33/100000",
                 "0/O/D/0/0");
-        quoteString.forEach(book::addQuote);
+        quoteString.forEach(this::addWithDelay);
         final List<String> quotes = book.dumpQuotes();
         assertEquals(7, quotes.size());
         final List<String> expected = Arrays.asList("OFFER",
@@ -209,7 +314,7 @@ public class MiniBookTest {
                 "Q5/B/U/1.20/500000",
                 "Q7/O/U/1.33/100000",
                 "0/B/D/0/0");
-        quoteString.forEach(book::addQuote);
+        quoteString.forEach(this::addWithDelay);
         final List<String> quotes = book.dumpQuotes();
         assertEquals(6, quotes.size());
         final List<String> expected = Arrays.asList("OFFER",

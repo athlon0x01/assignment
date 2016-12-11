@@ -1,6 +1,6 @@
 package my.ciklum.assignment.first;
 
-import java.util.List;
+import java.util.*;
 
 /**
  A book includes all securities that the institution regularly buys and sells on
@@ -33,12 +33,78 @@ import java.util.List;
  */
 public class MiniBook {
 
+    public static final String OFFER_LABEL = "OFFER";
+    public static final String BID_LABEL = "BID";
+    public static final String DELETE_ID = "0";
+
+    private final Map<String, Quote> bids;
+    private final Map<String, Quote> offers;
+    private final Comparator<Quote> bidComparator;
+    private final Comparator<Quote> offerComparator;
+
+    public MiniBook() {
+
+        bidComparator = (a, b) -> {
+            int c = b.getPrice().compareTo(a.getPrice());
+            if (c == 0) {
+                c = b.getVolume().compareTo(a.getVolume());
+            }
+            if (c == 0) {
+                c = b.getTimestamp().compareTo(a.getTimestamp());
+            }
+            return c;
+        };
+        bids = new HashMap<>();
+
+        offerComparator = (a, b) -> {
+            int c = a.getPrice().compareTo(b.getPrice());
+            if (c == 0) {
+                c = b.getVolume().compareTo(a.getVolume());
+            }
+            if (c == 0) {
+                c = b.getTimestamp().compareTo(a.getTimestamp());
+            }
+            return c;
+        };
+        offers = new HashMap<>();
+    }
+
     /**
      * Add quote to MiniBook
      * @param quote string to add
      */
     public void addQuote(String quote) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        if (quote == null || quote.isEmpty()) {
+            throw new IllegalArgumentException("Empty quote string is not allowed");
+        }
+        final Quote newQuote = Quote.parse(quote);
+        Map<String, Quote> qMap = (newQuote.getType() == Quote.Type.BID) ? bids : offers;
+        switch (newQuote.getStatus()) {
+            case NEW: {
+                if (qMap.containsKey(newQuote.getId())) {
+                    throw new IllegalArgumentException("MiniBook contains quote with id = ["
+                            + newQuote.getId() + "], use UPDATE quote instead of NEW");
+                }
+                qMap.put(newQuote.getId(), newQuote);
+                break;
+            }
+            case UPDATE: {
+                if (!qMap.containsKey(newQuote.getId())) {
+                    throw new IllegalArgumentException("MiniBook does not contain quote with id = ["
+                            + newQuote.getId() + "], use NEW quote instead of UPDATE");
+                }
+                qMap.put(newQuote.getId(), newQuote);
+                break;
+            }
+            case DELETE: {
+                if (DELETE_ID.equals(newQuote.getId())) {
+                    qMap.clear();
+                }
+                else {
+                    qMap.remove(newQuote.getId());
+                }
+            }
+        }
     }
 
     /**
@@ -46,7 +112,13 @@ public class MiniBook {
      * @return list of MiniBook's quotes string ready for printing
      */
     public List<String> dumpQuotes() {
-        throw new UnsupportedOperationException("Not implemented yet");
+        final List<String> quotes = new ArrayList<>();
+        quotes.add(OFFER_LABEL);
+        offers.values().stream().sorted(offerComparator).forEach(q -> quotes.add(q.toString()));
+        quotes.add("");
+        quotes.add(BID_LABEL);
+        bids.values().stream().sorted(bidComparator).forEach(q -> quotes.add(q.toString()));
+        return quotes;
     }
 
     /**
