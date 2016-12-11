@@ -1,5 +1,7 @@
 package my.ciklum.assignment.first;
 
+import java.util.List;
+
 /**
  A book includes all securities that the institution regularly buys and sells on
  the stock market. A bid is the price that an institution is willing to buy and
@@ -30,4 +32,27 @@ package my.ciklum.assignment.first;
  * @author Anton Borovyk
  */
 public class MiniBook {
+
+    /**
+     * Add quote to MiniBook
+     * @param quote string to add
+     */
+    public void addQuote(String quote) {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    /**
+     * public function for MiniBook content testing
+     * @return list of MiniBook's quotes string ready for printing
+     */
+    public List<String> dumpQuotes() {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    /**
+     * Prints MiniBook's quotes string
+     */
+    public void printQuotes() {
+        dumpQuotes().forEach(System.out::println);
+    }
 }
