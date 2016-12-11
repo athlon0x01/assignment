@@ -80,30 +80,27 @@ public class MiniBook {
         final Quote newQuote = Quote.parse(quote);
         Map<String, Quote> qMap = (newQuote.getType() == Quote.Type.BID) ? bids : offers;
         switch (newQuote.getStatus()) {
-            case NEW: {
+            case NEW:
                 if (qMap.containsKey(newQuote.getId())) {
                     throw new IllegalArgumentException("MiniBook contains quote with id = ["
                             + newQuote.getId() + "], use UPDATE quote instead of NEW");
                 }
                 qMap.put(newQuote.getId(), newQuote);
                 break;
-            }
-            case UPDATE: {
+            case UPDATE:
                 if (!qMap.containsKey(newQuote.getId())) {
                     throw new IllegalArgumentException("MiniBook does not contain quote with id = ["
                             + newQuote.getId() + "], use NEW quote instead of UPDATE");
                 }
                 qMap.put(newQuote.getId(), newQuote);
                 break;
-            }
-            case DELETE: {
+            case DELETE:
                 if (DELETE_ID.equals(newQuote.getId())) {
                     qMap.clear();
                 }
                 else {
                     qMap.remove(newQuote.getId());
                 }
-            }
         }
     }
 

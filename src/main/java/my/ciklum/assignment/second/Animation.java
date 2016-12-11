@@ -1,5 +1,8 @@
 package my.ciklum.assignment.second;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  A collection of particles is contained in a linear chamber. They all have the
  same speed, but some are headed toward the right and others are headed toward
@@ -44,6 +47,15 @@ package my.ciklum.assignment.second;
 public class Animation {
 
     public String[] animate(int speed, String init) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        final Chamber chamber = new Chamber(speed, init);
+        List<String> results = new ArrayList<>();
+        //print chamber at the initial instant
+        results.add(chamber.print());
+        while (!chamber.isEmpty()) {
+            //move particles and print hte chamber
+            chamber.moveParticles();
+            results.add(chamber.print());
+        }
+        return results.toArray(new String[results.size()]);
     }
 }
