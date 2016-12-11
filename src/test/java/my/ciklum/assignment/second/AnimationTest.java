@@ -1,8 +1,12 @@
 package my.ciklum.assignment.second;
 
 import org.junit.Before;
+import org.junit.Test;
 
-import static org.junit.Assert.*;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Unit tests fro {@link Animation}
@@ -69,8 +73,81 @@ import static org.junit.Assert.*;
  */
 public class AnimationTest {
 
+    private Animation animation;
+
     @Before
     public void setUp() throws Exception {
+        animation = new Animation();
+    }
 
+    @Test
+    public void aCaseTest() {
+        final List<String> actual = Arrays.asList(animation.animate(2, "..R...."));
+        final List<String> expected = Arrays.asList("..X....",
+                "....X..",
+                "......X",
+                ".......");
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void bCaseTest() {
+        final List<String> actual = Arrays.asList(animation.animate(3, "RR..LRL"));
+        final List<String> expected = Arrays.asList("XX..XXX",
+                ".X.XX..",
+                "X.....X",
+                ".......");
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void cCaseTest() {
+        final List<String> actual = Arrays.asList(animation.animate(2, "LRLR.LRLR"));
+        final List<String> expected = Arrays.asList("XXXX.XXXX",
+                "X..X.X..X",
+                ".X.X.X.X.",
+                ".X.....X.",
+                ".........");
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void dCaseTest() {
+        final List<String> actual = Arrays.asList(animation.animate(10, "RLRLRLRLRL"));
+        final List<String> expected = Arrays.asList("XXXXXXXXXX",
+                "..........");
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void eCaseTest() {
+        final List<String> actual = Arrays.asList(animation.animate(1, "..."));
+        final List<String> expected = Arrays.asList("...");
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void fCaseTest() {
+        final List<String> actual = Arrays.asList(animation.animate(1, "LRRL.LR.LRR.R.LRRL."));
+        final List<String> expected = Arrays.asList("XXXX.XX.XXX.X.XXXX.",
+                "..XXX..X..XX.X..XX.",
+                ".X.XX.X.X..XX.XX.XX",
+                "X.X.XX...X.XXXXX..X",
+                ".X..XXX...X..XX.X..",
+                "X..X..XX.X.XX.XX.X.",
+                "..X....XX..XX..XX.X",
+                ".X.....XXXX..X..XX.",
+                "X.....X..XX...X..XX",
+                ".....X..X.XX...X..X",
+                "....X..X...XX...X..",
+                "...X..X.....XX...X.",
+                "..X..X.......XX...X",
+                ".X..X.........XX...",
+                "X..X...........XX..",
+                "..X.............XX.",
+                ".X...............XX",
+                "X.................X",
+                "...................");
+        assertEquals(expected, actual);
     }
 }

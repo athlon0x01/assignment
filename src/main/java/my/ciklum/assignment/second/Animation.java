@@ -42,4 +42,8 @@ package my.ciklum.assignment.second;
  * @author Anton Borovyk
  */
 public class Animation {
+
+    public String[] animate(int speed, String init) {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
 }
